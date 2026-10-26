@@ -211,7 +211,7 @@ if(talents.missile1&&equippedWeapon&&enemies.length){
  }
 }else{secondaryTimer=0}
 for(let i=missiles.length-1;i>=0;i--){
- const m=missiles[i];if(m.delay>0){m.delay-=dt;continue}
+ const m=missiles[i];if(!m)continue;if(m.delay>0){m.delay-=dt;continue}
  if(m.kind==='missile'){
   if(!enemies.includes(m.target)||dist(m.target,C)>radarRadius()){missiles.splice(i,1);continue}
   const d=dist(m,m.target),step=m.speed*dt;
@@ -223,7 +223,7 @@ for(let i=missiles.length-1;i>=0;i--){
  }else{
   if(m.kind==='laser'&&(!enemies.includes(m.target)||dist(m.target,C)>radarRadius())){
    // A dead locked target cancels the remaining volley and restarts the full cooldown.
-   for(let j=missiles.length-1;j>=0;j--)if(missiles[j].kind==='laser')missiles.splice(j,1);
+   for(let j=missiles.length-1;j>=0;j--)if(missiles[j]?.kind==='laser')missiles.splice(j,1);
    secondaryTimer=0;continue;
   }
   m.x+=m.vx*dt;m.y+=m.vy*dt;m.life-=dt;
@@ -326,7 +326,7 @@ function render(){ctx.fillStyle='#080b15';ctx.fillRect(0,0,W,H);ctx.strokeStyle=
  ctx.beginPath();ctx.arc(e.x,e.y,e.radius,0,Math.PI*2);ctx.stroke();
  ctx.shadowBlur=0;ctx.lineWidth=1;
  ctx.fillStyle='#d18bff';ctx.beginPath();ctx.arc(e.x,e.y,2.5,0,Math.PI*2);ctx.fill();
- }else shape(e.x,e.y,e.radius,e.type,['#ff6487','#ffc46b','#a890ff'][e.type])}for(let p of sparks){ctx.globalAlpha=Math.max(0,p.life/p.maxLife);ctx.fillStyle=p.color;ctx.fillRect(p.x-2,p.y-2,4,4)}ctx.globalAlpha=1;ctx.textAlign='center';ctx.font='bold 15px monospace';for(const p of popups){ctx.globalAlpha=Math.max(0,p.life/p.maxLife);ctx.fillStyle=p.coin?'#ffe37a':'#a5ff91';ctx.fillText(p.label,p.x,p.y)}ctx.globalAlpha=1;for(let b of bullets)shape(b.x,b.y,4,0,'#76faff');for(let m of missiles){if(m.delay>0)continue;ctx.shadowColor=m.color;ctx.shadowBlur=6;shape(m.x,m.y,m.kind==='laser'?2:m.kind==='machine'?2.5:5,m.kind==='missile'?1:0,m.color);ctx.shadowBlur=0;if(m.kind==='laser'){ctx.strokeStyle=m.color;ctx.globalAlpha=.45;ctx.beginPath();ctx.moveTo(m.x-m.vx*.018,m.y-m.vy*.018);ctx.lineTo(m.x,m.y);ctx.stroke();ctx.globalAlpha=1}}for(let b of enemyBullets){ctx.shadowColor='#d18bff';ctx.shadowBlur=10;shape(b.x,b.y,b.radius,0,'#d18bff');ctx.shadowBlur=0;}if(equippedWeapon==='laser'&&talents.missile1){ctx.shadowColor='#69eaff';ctx.shadowBlur=9;shape(C.x,C.y,8,0,'#69eaff');ctx.shadowBlur=0}ctx.shadowColor='#66ffc4';ctx.shadowBlur=18;shape(C.x,C.y,20,0,'#36ed75');ctx.shadowBlur=0;ctx.textAlign='center';ctx.fillStyle='#c9ffea';ctx.font='bold 14px monospace';ctx.fillText('CORE',C.x,C.y+42);if(!running){ctx.fillStyle='#e4fff5';ctx.font='bold 28px monospace';ctx.fillText(elapsed===0?'DEFEND THE CORE':'GAME OVER',C.x,105);ctx.font='16px monospace';ctx.fillText(elapsed===0?'PRESS START TO PLAY':'PRESS RESTART TO TRY AGAIN',C.x,135)}}
+ }else shape(e.x,e.y,e.radius,e.type,['#ff6487','#ffc46b','#a890ff'][e.type])}for(let p of sparks){ctx.globalAlpha=Math.max(0,p.life/p.maxLife);ctx.fillStyle=p.color;ctx.fillRect(p.x-2,p.y-2,4,4)}ctx.globalAlpha=1;ctx.textAlign='center';ctx.font='bold 15px monospace';for(const p of popups){ctx.globalAlpha=Math.max(0,p.life/p.maxLife);ctx.fillStyle=p.coin?'#ffe37a':'#a5ff91';ctx.fillText(p.label,p.x,p.y)}ctx.globalAlpha=1;for(let b of bullets)shape(b.x,b.y,4,0,'#76faff');for(let m of missiles){if(!m||m.delay>0)continue;ctx.shadowColor=m.color;ctx.shadowBlur=6;shape(m.x,m.y,m.kind==='laser'?2:m.kind==='machine'?2.5:5,m.kind==='missile'?1:0,m.color);ctx.shadowBlur=0;if(m.kind==='laser'){ctx.strokeStyle=m.color;ctx.globalAlpha=.45;ctx.beginPath();ctx.moveTo(m.x-m.vx*.018,m.y-m.vy*.018);ctx.lineTo(m.x,m.y);ctx.stroke();ctx.globalAlpha=1}}for(let b of enemyBullets){ctx.shadowColor='#d18bff';ctx.shadowBlur=10;shape(b.x,b.y,b.radius,0,'#d18bff');ctx.shadowBlur=0;}if(equippedWeapon==='laser'&&talents.missile1){ctx.shadowColor='#69eaff';ctx.shadowBlur=9;shape(C.x,C.y,8,0,'#69eaff');ctx.shadowBlur=0}ctx.shadowColor='#66ffc4';ctx.shadowBlur=18;shape(C.x,C.y,20,0,'#36ed75');ctx.shadowBlur=0;ctx.textAlign='center';ctx.fillStyle='#c9ffea';ctx.font='bold 14px monospace';ctx.fillText('CORE',C.x,C.y+42);if(!running){ctx.fillStyle='#e4fff5';ctx.font='bold 28px monospace';ctx.fillText(elapsed===0?'DEFEND THE CORE':'GAME OVER',C.x,105);ctx.font='16px monospace';ctx.fillText(elapsed===0?'PRESS START TO PLAY':'PRESS RESTART TO TRY AGAIN',C.x,135)}}
 function showEndMenu(){
  document.getElementById('statsOverlay').hidden=true;
  document.getElementById('shopOverlay').hidden=true;
